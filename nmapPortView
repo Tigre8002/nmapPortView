@@ -79,6 +79,7 @@ def createXMLtoHTML(file):
     output_file = f"{output_dir}/{randomNumber}.html"
     subprocess.run(["xsltproc", file, "-o", output_file], check=True)
     pyperclip.copy(f"file:///tmp/{randomNumber}/{randomNumber}.html")
+    print(f"{green}Link ---> file:///tmp/{randomNumber}/{randomNumber}.html")
     print(f"{red}[!]-The link has been copied. Paste it into your browser.{RESET}")
 
 

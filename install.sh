@@ -39,6 +39,18 @@ install_xsltproc() {
     fi
 }
 
+install_pyperclip() {
+    echo -e "${blueColour}[*] Checking Python dependencies (pyperclip)...${endColour}"
+    if command -v pip3 >/dev/null 2>&1; then
+        pip3 install pyperclip
+    elif command -v pip >/dev/null 2>&1; then
+        pip install pyperclip
+    else
+        echo -e "${yellowColour}[!] Pip not found. Trying to install python3-pip...${endColour}"
+        return 1
+    fi
+}
+
 install_tool() {
     if ! command -v nmapPortView >/dev/null 2>&1; then
         if [ -f "./nmapPortView" ]; then
@@ -55,6 +67,7 @@ case $option in
   "Y")
     install_xsltproc
     install_tool
+    install_pyperclip
     ;;
   *)
     echo "Error en la instalación"
