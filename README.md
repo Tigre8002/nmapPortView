@@ -8,7 +8,7 @@ Made by Tigre8002
 
 **NmapPortView** is a Python-based automation tool designed to streamline workflows during penetration testing and CTFs. Its primary objective is to eliminate the manual effort spent copying port numbers or converting reports, allowing for a faster and more efficient transition from scanning to exploitation.
 
-## 🚀 Características Principales
+## 🚀 Main Features
 
 * **⚡ Smart Extraction (`-c`)**:
     * Parses Nmap grepable output (`-oG`).
@@ -22,13 +22,9 @@ Made by Tigre8002
     * Generates a temporary file in `/tmp/` to keep your environment clean.
     * **Quick Link: Automatically copies the` file://... path` to the clipboard so you only have to `Ctrl+V` into your browser.
 
+## 📋 Installer Compatibility
 
-* **🐧 Multi-Plataforma**:
-    * El instalador detecta tu distribución y configura el entorno automáticamente.
-
-## 📋 Compatibilidad del Instalador
-
-El script `install.sh` gestiona automáticamente las dependencias (`xsltproc`) en las siguientes distribuciones:
+The `install.sh` script automatically manages dependencies (`xsltproc`) on the following distributions:
 
 | Operating System | Package  Manager | Status |
 |-------------------|--------------------|--------|
@@ -59,8 +55,10 @@ El script `install.sh` gestiona automáticamente las dependencias (`xsltproc`) e
 
 Once installed, you can invoke `nmapPortView` from any path in your terminal.
 
-### 1. Trabajando con Puertos (Mode Grepable)
-Extrae los puertos abiertos de un archivo generado con `nmap -oG`.
+
+### 1. Working with Ports (Mode Grepable)
+Extracts open ports from a file generated with `nmap -oG`.
+
 
 ![til](https://github.com/Tigre8002/nmapPortView/blob/main/Assets/Copy.gif)
 
@@ -99,7 +97,7 @@ Extract open ports from a file generated with nmap -oX:1
 # 1. XML File
 nmap -p- --min-rate 5000 -oX allPorts 192.168.1.10
 
-# 2. Extract puertos
+# 2. Extract ports to web
 nmapPortView -xF allPorts
 
 Output: 
