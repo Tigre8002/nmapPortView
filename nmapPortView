@@ -1,0 +1,118 @@
+#!/usr/bin/python
+import sys
+import re
+import os
+import pyperclip
+import random
+import subprocess
+
+RESET = "\033[0m"
+red = "\033[31m"
+green = "\033[32m"
+yellow = "\033[33m"
+blue = "\033[34m"
+
+"""
+-c Copy Ports on grip file
+-xf File xml
+"""
+
+def findPorts(filename):
+    results = {}
+    
+    with open(filename, 'r') as file:
+        for line in file:
+            if "Ports:" in line:
+                ip_match = re.search(r'Host: (\d+\.\d+\.\d+\.\d+)', line)
+                if not ip_match: continue
+                ip = ip_match.group(1)
+                
+                port_blocks = re.findall(r'(\d+)/([^/]+)/(tcp|udp)', line)
+                
+                results[ip] = {
+                    'tcp': [],
+                    'udp': []
+                }
+                
+                for port, status, proto in port_blocks:
+                    data = {"port": int(port), "status": status}
+                    results[ip][proto].append(data)
+                    
+    printPorts(results)
+
+def helpMenu():
+    print(f"{yellow}Nmap PortView 0.01{RESET}")
+    print(f"{green}Usage: nmapPortView.py [option] file {RESET}\n {red}Options:{RESET}")
+    print(f"{green}     -c --> Extracting open ports from Nmap grepable output.")
+    print(f"{green}     -xF --> Create a summary page of ports from an Nmap XML file.")
+    print(f"{green}Examples:{RESET}\n{yellow}./nmapPortView.py -c portsDiscoveryGripFile \n./nmapPortView.py -xF xmlNmap")
+
+def printPorts(data):
+    toClipBoard = ""
+    ports =[]
+    for ip, protos in data.items():
+        print(f"{green}--- Results for {ip} --- {RESET}")
+        for proto, info in protos.items():
+            if info:
+                print(f"{red}[{proto.upper()}]{RESET}")
+                for item in info:
+                    ports.append(item['port'])
+                    if item['status'] == 'open':
+                        print(f"  Port {blue}{item['port']}{RESET}: {green}{item['status']}{RESET}")
+                    else: 
+                        print(f"  Port {blue}{item['port']}{RESET}: {yellow}{item['status']}{RESET}")
+    for p in ports:
+        if toClipBoard == "":
+            toClipBoard += str(p)
+        else:
+            toClipBoard += "," + str(p)
+
+    pyperclip.copy(toClipBoard)
+
+    print(f"{red}\n[+]-It has a copy to the clipboard with the ports.{RESET}")
+
+def createXMLtoHTML(file):
+    randomNumber = numero = random.randint(0, 1000000)
+    output_dir = f"/tmp/{randomNumber}"
+    output_file = f"{output_dir}/{randomNumber}.html"
+    subprocess.run(["xsltproc", file, "-o", output_file], check=True)
+    pyperclip.copy(f"file:///tmp/{randomNumber}/{randomNumber}.html")
+    print(f"{red}[!]-The link has been copied. Paste it into your browser.{RESET}")
+
+
+def extractPorts():
+    if len(sys.argv) == 3:
+        option = sys.argv[1]
+        
+        if option == "-c":
+                file = sys.argv[2]
+
+                if os.path.exists(file):
+                    text = open(file, "r")
+                    contentText= text.read()
+                    
+                    if contentText[:6] == "# Nmap":
+                        findPorts(file)
+                    else:
+                        print(f"{red}[!]-It is not a grip file.{RESET}")
+        elif option == "-xF":
+                file = sys.argv[2]
+
+                if os.path.exists(file):
+                    text = open(file, "r")
+                    contentText= text.read()
+
+                    if contentText.strip().startswith('<?xml'):
+                        createXMLtoHTML(file)
+        else:
+            print(f"{red}[!]-Yo need to put a correct argument.")
+    elif sys.argv[1] == "-h" or sys.argv[1] == "--help":
+            helpMenu()
+
+    else:
+        print(f"{red}[!]-You need to add an argument and a file.{RESET}")
+
+if __name__ == "__main__":
+    extractPorts()
+
+
